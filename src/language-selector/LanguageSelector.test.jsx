@@ -35,6 +35,7 @@ describe('LanguageSelector', () => {
     mockReload = jest.fn();
     Object.defineProperty(window, 'location', {
       configurable: true,
+      writable: true,
       value: { reload: mockReload },
     });
 
@@ -68,8 +69,8 @@ describe('LanguageSelector', () => {
     const langDropdown = screen.getByRole('button', { id: 'lang-selector-dropdown' });
     fireEvent.click(langDropdown);
 
-    const englishOption = screen.getByRole('button', { name: 'Español' });
-    fireEvent.click(englishOption);
+    const spanishOption = screen.getByRole('button', { name: 'Español' });
+    fireEvent.click(spanishOption);
 
     expect(setSpy).toHaveBeenCalledWith(LANGUAGE_PREFERENCE_COOKIE_NAME, 'es');
     expect(mockReload).toHaveBeenCalled();
