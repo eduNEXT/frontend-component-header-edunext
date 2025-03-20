@@ -63,7 +63,7 @@ describe('LanguageSelector', () => {
   });
 
   it('should change the language and reload the page', () => {
-    const setSpy = jest.spyOn(getCookies(), 'set');
+    const setCookiesSpy = jest.spyOn(getCookies(), 'set');
     render(<LanguageSelector />);
 
     const langDropdown = screen.getByRole('button', { id: 'lang-selector-dropdown' });
@@ -72,14 +72,14 @@ describe('LanguageSelector', () => {
     const spanishOption = screen.getByRole('button', { name: 'Español' });
     fireEvent.click(spanishOption);
 
-    expect(setSpy).toHaveBeenCalledWith(LANGUAGE_PREFERENCE_COOKIE_NAME, 'es');
+    expect(setCookiesSpy).toHaveBeenCalledWith(LANGUAGE_PREFERENCE_COOKIE_NAME, 'es');
     expect(mockReload).toHaveBeenCalled();
   });
 
   it('should not reload the page if the same language is selected', () => {
     jest.spyOn(getCookies(), 'get').mockImplementation(() => 'en');
 
-    const setSpy = jest.spyOn(getCookies(), 'set');
+    const setCookiesSpy = jest.spyOn(getCookies(), 'set');
     render(<LanguageSelector />);
 
     const langDropdown = screen.getByRole('button', { id: 'lang-selector-dropdown' });
@@ -88,7 +88,7 @@ describe('LanguageSelector', () => {
     const englishOption = screen.getByRole('button', { name: 'English' });
     fireEvent.click(englishOption);
 
-    expect(setSpy).not.toHaveBeenCalled();
+    expect(setCookiesSpy).not.toHaveBeenCalled();
     expect(mockReload).not.toHaveBeenCalled();
   });
 
