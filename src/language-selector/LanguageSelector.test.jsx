@@ -2,9 +2,15 @@ import React from 'react';
 import { mergeConfig } from '@edx/frontend-platform';
 import { getCookies } from '@edx/frontend-platform/i18n/lib';
 import {
-  authenticatedUser, fireEvent, initializeMockApp, render, screen,
+  act, authenticatedUser, fireEvent, initializeMockApp, render, screen,
 } from '../setupTest';
 import LanguageSelector from './LanguageSelector';
+import { patchPreferences, postSetLang } from './data';
+
+jest.mock('./data', () => ({
+  patchPreferences: jest.fn().mockResolvedValue({}),
+  postSetLang: jest.fn().mockResolvedValue({}),
+}));
 
 jest.mock('@openedx/paragon/icons', () => ({
   Language: () => <div>LanguageIcon</div>,
@@ -27,7 +33,6 @@ describe('LanguageSelector', () => {
       ENABLE_HEADER_LANG_SELECTOR: true,
       LANGUAGE_PREFERENCE_COOKIE_NAME,
       SITE_SUPPORTED_LANGUAGES: ['es', 'en'],
-      authenticatedUser,
     });
 
     initializeMockApp();
@@ -62,7 +67,7 @@ describe('LanguageSelector', () => {
     expect(container.querySelector('#language-selector')).toBeNull();
   });
 
-  it('should change the language and reload the page', () => {
+  it('should change the language and reload the page', async () => {
     const setCookiesSpy = jest.spyOn(getCookies(), 'set');
     render(<LanguageSelector />);
 
@@ -70,13 +75,23 @@ describe('LanguageSelector', () => {
     fireEvent.click(langDropdown);
 
     const spanishOption = screen.getByRole('button', { name: 'Español' });
-    fireEvent.click(spanishOption);
 
+    await act(async () => {
+      fireEvent.click(spanishOption);
+    });
+
+    // Check cookie was set
     expect(setCookiesSpy).toHaveBeenCalledWith(LANGUAGE_PREFERENCE_COOKIE_NAME, 'es');
+
+    // Check API calls were made for authenticated user
+    expect(patchPreferences).toHaveBeenCalledWith(authenticatedUser.username, { prefLang: 'es' });
+    expect(postSetLang).toHaveBeenCalledWith('es');
+
+    // Check page was reloaded
     expect(mockReload).toHaveBeenCalled();
   });
 
-  it('should not reload the page if the same language is selected', () => {
+  it('should not reload the page if the same language is selected', async () => {
     jest.spyOn(getCookies(), 'get').mockImplementation(() => 'en');
 
     const setCookiesSpy = jest.spyOn(getCookies(), 'set');
@@ -86,9 +101,13 @@ describe('LanguageSelector', () => {
     fireEvent.click(langDropdown);
 
     const englishOption = screen.getByRole('button', { name: 'English' });
-    fireEvent.click(englishOption);
+    await act(async () => {
+      fireEvent.click(englishOption);
+    });
 
     expect(setCookiesSpy).not.toHaveBeenCalled();
+    expect(patchPreferences).not.toHaveBeenCalled();
+    expect(postSetLang).not.toHaveBeenCalled();
     expect(mockReload).not.toHaveBeenCalled();
   });
 
