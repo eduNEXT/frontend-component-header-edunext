@@ -98,7 +98,7 @@ const HeaderBody = ({
         )}
         <ActionRow.Spacer />
         <Nav>
-          <LanguageSelector className="mt-2" />
+          <LanguageSelector />
           <UserMenu
             {...{
               username,
