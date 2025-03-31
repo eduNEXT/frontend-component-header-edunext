@@ -27,7 +27,16 @@ exports[`LanguageSelector should change the language when different language is 
               LanguageIcon
             </div>
           </span>
-          English
+          <span
+            class="lang-label-medium"
+          >
+            EN
+          </span>
+          <span
+            class="lang-label-large"
+          >
+            English
+          </span>
         </button>
         <div
           aria-labelledby="lang-selector-dropdown"
@@ -83,7 +92,16 @@ exports[`LanguageSelector should change the language when different language is 
               LanguageIcon
             </div>
           </span>
-          English
+          <span
+            class="lang-label-medium"
+          >
+            EN
+          </span>
+          <span
+            class="lang-label-large"
+          >
+            English
+          </span>
         </button>
       </div>
     </div>
@@ -106,7 +124,16 @@ exports[`LanguageSelector should display full language name on large screens: la
       LanguageIcon
     </div>
   </span>
-  English
+  <span
+    class="lang-label-medium"
+  >
+    EN
+  </span>
+  <span
+    class="lang-label-large"
+  >
+    English
+  </span>
 </button>
 `;
 
@@ -125,7 +152,16 @@ exports[`LanguageSelector should display language code on medium screens: medium
       LanguageIcon
     </div>
   </span>
-  EN
+  <span
+    class="lang-label-medium"
+  >
+    EN
+  </span>
+  <span
+    class="lang-label-large"
+  >
+    English
+  </span>
 </button>
 `;
 
@@ -144,7 +180,16 @@ exports[`LanguageSelector should display only icon on small screens: small-scree
       LanguageIcon
     </div>
   </span>
-  
+  <span
+    class="lang-label-medium"
+  >
+    EN
+  </span>
+  <span
+    class="lang-label-large"
+  >
+    English
+  </span>
 </button>
 `;
 
@@ -175,7 +220,16 @@ exports[`LanguageSelector should not change language if the same language is sel
               LanguageIcon
             </div>
           </span>
-          English
+          <span
+            class="lang-label-medium"
+          >
+            EN
+          </span>
+          <span
+            class="lang-label-large"
+          >
+            English
+          </span>
         </button>
         <div
           aria-labelledby="lang-selector-dropdown"
@@ -231,7 +285,16 @@ exports[`LanguageSelector should not change language if the same language is sel
               LanguageIcon
             </div>
           </span>
-          English
+          <span
+            class="lang-label-medium"
+          >
+            EN
+          </span>
+          <span
+            class="lang-label-large"
+          >
+            English
+          </span>
         </button>
       </div>
     </div>

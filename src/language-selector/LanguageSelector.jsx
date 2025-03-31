@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
-import React, { useMemo, useContext } from 'react';
+import React, { useContext } from 'react';
 import { getPrimaryLanguageSubtag, injectIntl } from '@edx/frontend-platform/i18n';
-import { Dropdown, useWindowSize } from '@openedx/paragon';
+import { Dropdown } from '@openedx/paragon';
 import { Language } from '@openedx/paragon/icons';
 import { getCookies } from '@edx/frontend-platform/i18n/lib';
 import { AppContext } from '@edx/frontend-platform/react';
@@ -9,10 +9,11 @@ import { changeUserSessionLanguage } from './data';
 
 /**
  * Gets the localized display name of a language in its own language.
- * First letter is capitalized for display purposes.
  *
- * @param {string} locale - The locale code (e.g. 'en', 'es')
- * @returns {string} The capitalized display name of the language
+ * @function getDisplayName
+ * @param {string} locale - The locale code (e.g., 'en', 'es', 'ar')
+ * @returns {string} The capitalized display name of the language in its native form
+ * @example
  */
 const getDisplayName = (locale) => {
   const langName = new Intl.DisplayNames([locale], { type: 'language', languageDisplay: 'standard' }).of(locale);
@@ -22,25 +23,26 @@ const getDisplayName = (locale) => {
 /**
  * Language Selector component that displays a dropdown allowing users to change the site language.
  *
- * Features:
- * - Responsive design that adjusts label display based on screen width
- * - Only displays languages configured in SITE_SUPPORTED_LANGUAGES
- * - Can be completely disabled via ENABLE_HEADER_LANG_SELECTOR config
- * - Stores language preference in a cookie
- * - Updates user preferences via API
+ * The component is responsive and adapts to different screen sizes:
+ * - On large screens: Shows the full language name (e.g., "English")
+ * - On medium screens: Shows the language code (e.g., "EN")
+ * - On small screens: Shows only the language icon
  *
  * @component
- * @param {Object} props
- * @param {string} props.className - Additional CSS class names to apply to the component
- * @returns {React.Element|null} The rendered component or null if disabled/no supported languages
+ * @param {Object} props - Component props
+ * @param {string} [props.className=''] - Additional CSS class names to apply to the component
+ * @returns {React.Element|null} The rendered component or null if disabled or no supported languages
+ *
+ * @requires config.ENABLE_HEADER_LANG_SELECTOR - Must be true to display the selector
+ * @requires config.SITE_SUPPORTED_LANGUAGES - Must be a non-empty array of locale codes
+ * @requires config.LANGUAGE_PREFERENCE_COOKIE_NAME - Cookie name for storing language preference
  */
 const LanguageSelector = ({ className }) => {
   const { config } = useContext(AppContext);
-  const { width } = useWindowSize();
   const cookies = getCookies();
 
   const languageOptions = config.SITE_SUPPORTED_LANGUAGES;
-  const langCookieName = config?.LANGUAGE_PREFERENCE_COOKIE_NAME;
+  const langCookieName = config.LANGUAGE_PREFERENCE_COOKIE_NAME;
   const currentLocale = cookies.get(langCookieName) || 'en';
 
   /**
@@ -55,17 +57,8 @@ const LanguageSelector = ({ className }) => {
     }
   };
 
-  /**
-   * Determines what to display as the button label based on screen width:
-   * - Less than 576px: No text (icon only)
-   * - 576px to 767px: Language code in uppercase (e.g., "EN", "ES")
-   * - 768px and above: Full language name (e.g., "English", "Español")
-   */
-  const currentLocaleLabel = useMemo(() => {
-    if (width < 576) { return ''; }
-    if (width < 768) { return getPrimaryLanguageSubtag(currentLocale).toUpperCase(); }
-    return getDisplayName(currentLocale);
-  }, [currentLocale, width]);
+  const currentLangCode = getPrimaryLanguageSubtag(currentLocale).toUpperCase();
+  const currentlangDisplayName = getDisplayName(currentLocale);
 
   // Don't render the component if it's disabled or there are no language options
   if (!config.ENABLE_HEADER_LANG_SELECTOR
@@ -83,7 +76,8 @@ const LanguageSelector = ({ className }) => {
           variant="outline-primary"
           size="sm"
         >
-          {currentLocaleLabel}
+          <span className="lang-label-medium">{currentLangCode}</span>
+          <span className="lang-label-large">{currentlangDisplayName}</span>
         </Dropdown.Toggle>
         <Dropdown.Menu>
           {languageOptions.map((locale) => (
