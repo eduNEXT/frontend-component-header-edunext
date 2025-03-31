@@ -5,29 +5,7 @@ import { Dropdown, useWindowSize } from '@openedx/paragon';
 import { Language } from '@openedx/paragon/icons';
 import { getCookies } from '@edx/frontend-platform/i18n/lib';
 import { AppContext } from '@edx/frontend-platform/react';
-import { patchPreferences, postSetLang } from './data';
-
-/**
- * Changes the user's language preference by:
- * 1. Setting a cookie for immediate effect
- * 2. Updating user preferences via API (if authenticated)
- * 3. Posting to the setlang endpoint
- * 4. Reloading the page to apply changes
- *
- * @param {string} langCookieName - The name of the cookie used to store language preference
- * @param {string} selectedLocale - The locale code (e.g. 'en', 'es') to set as the preferred language
- * @param {Object} authenticatedUser - The current authenticated user (if any)
- */
-const onLanguageSelected = async (langCookieName, selectedLocale, authenticatedUser) => {
-  const cookies = getCookies();
-  cookies.set(langCookieName, selectedLocale);
-
-  if (authenticatedUser) {
-    await patchPreferences(authenticatedUser.username, { prefLang: selectedLocale });
-    await postSetLang(selectedLocale);
-  }
-  window.location.reload();
-};
+import { changeUserSessionLanguage } from './data';
 
 /**
  * Gets the localized display name of a language in its own language.
@@ -36,7 +14,7 @@ const onLanguageSelected = async (langCookieName, selectedLocale, authenticatedU
  * @param {string} locale - The locale code (e.g. 'en', 'es')
  * @returns {string} The capitalized display name of the language
  */
-const getLocaleName = (locale) => {
+const getDisplayName = (locale) => {
   const langName = new Intl.DisplayNames([locale], { type: 'language', languageDisplay: 'standard' }).of(locale);
   return langName.charAt(0).toUpperCase() + langName.slice(1);
 };
@@ -57,7 +35,7 @@ const getLocaleName = (locale) => {
  * @returns {React.Element|null} The rendered component or null if disabled/no supported languages
  */
 const LanguageSelector = ({ className }) => {
-  const { config, authenticatedUser } = useContext(AppContext);
+  const { config } = useContext(AppContext);
   const { width } = useWindowSize();
   const cookies = getCookies();
 
@@ -67,13 +45,13 @@ const LanguageSelector = ({ className }) => {
 
   /**
    * Handles the selection of a language from the dropdown.
-   * Only reloads the page if the selected language is different from the current one.
+   * Only triggers language change if the selected language is different from the current one.
    *
    * @param {string} selectedLocale - The locale code selected by the user
    */
   const handleSelect = (selectedLocale) => {
     if (currentLocale !== selectedLocale) {
-      onLanguageSelected(langCookieName, selectedLocale, authenticatedUser);
+      changeUserSessionLanguage(selectedLocale);
     }
   };
 
@@ -86,7 +64,7 @@ const LanguageSelector = ({ className }) => {
   const currentLocaleLabel = useMemo(() => {
     if (width < 576) { return ''; }
     if (width < 768) { return getPrimaryLanguageSubtag(currentLocale).toUpperCase(); }
-    return getLocaleName(currentLocale);
+    return getDisplayName(currentLocale);
   }, [currentLocale, width]);
 
   // Don't render the component if it's disabled or there are no language options
@@ -97,7 +75,7 @@ const LanguageSelector = ({ className }) => {
   }
 
   return (
-    <div className={className} id="language-selector">
+    <div className={`${className} language-selector`} id="language-selector">
       <Dropdown onSelect={handleSelect}>
         <Dropdown.Toggle
           id="lang-selector-dropdown"
@@ -110,7 +88,7 @@ const LanguageSelector = ({ className }) => {
         <Dropdown.Menu>
           {languageOptions.map((locale) => (
             <Dropdown.Item key={`lang-selector-${locale}`} eventKey={locale}>
-              {getLocaleName(locale)}
+              {getDisplayName(locale)}
             </Dropdown.Item>
           ))}
         </Dropdown.Menu>

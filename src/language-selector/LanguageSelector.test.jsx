@@ -2,14 +2,13 @@ import React from 'react';
 import { mergeConfig } from '@edx/frontend-platform';
 import { getCookies } from '@edx/frontend-platform/i18n/lib';
 import {
-  act, authenticatedUser, fireEvent, initializeMockApp, render, screen,
+  act, fireEvent, initializeMockApp, render, screen,
 } from '../setupTest';
 import LanguageSelector from './LanguageSelector';
-import { patchPreferences, postSetLang } from './data';
+import { changeUserSessionLanguage } from './data';
 
 jest.mock('./data', () => ({
-  patchPreferences: jest.fn().mockResolvedValue({}),
-  postSetLang: jest.fn().mockResolvedValue({}),
+  changeUserSessionLanguage: jest.fn().mockResolvedValue({}),
 }));
 
 jest.mock('@openedx/paragon/icons', () => ({
@@ -53,7 +52,7 @@ describe('LanguageSelector', () => {
     });
 
     const { container } = render(<LanguageSelector />);
-
+    expect(container).toMatchSnapshot('disabled-language-selector');
     expect(container.querySelector('#language-selector')).toBeNull();
   });
 
@@ -63,13 +62,15 @@ describe('LanguageSelector', () => {
     });
 
     const { container } = render(<LanguageSelector />);
-
+    expect(container).toMatchSnapshot('no-supported-languages');
     expect(container.querySelector('#language-selector')).toBeNull();
   });
 
-  it('should change the language and reload the page', async () => {
-    const setCookiesSpy = jest.spyOn(getCookies(), 'set');
-    render(<LanguageSelector />);
+  it('should change the language when different language is selected', async () => {
+    jest.spyOn(getCookies(), 'get').mockImplementation(() => 'en');
+
+    const { container } = render(<LanguageSelector />);
+    expect(container).toMatchSnapshot('before-language-change');
 
     const langDropdown = screen.getByRole('button', { id: 'lang-selector-dropdown' });
     fireEvent.click(langDropdown);
@@ -80,22 +81,15 @@ describe('LanguageSelector', () => {
       fireEvent.click(spanishOption);
     });
 
-    // Check cookie was set
-    expect(setCookiesSpy).toHaveBeenCalledWith(LANGUAGE_PREFERENCE_COOKIE_NAME, 'es');
-
-    // Check API calls were made for authenticated user
-    expect(patchPreferences).toHaveBeenCalledWith(authenticatedUser.username, { prefLang: 'es' });
-    expect(postSetLang).toHaveBeenCalledWith('es');
-
-    // Check page was reloaded
-    expect(mockReload).toHaveBeenCalled();
+    expect(container).toMatchSnapshot('after-language-change');
+    expect(changeUserSessionLanguage).toHaveBeenCalledWith('es');
   });
 
-  it('should not reload the page if the same language is selected', async () => {
+  it('should not change language if the same language is selected', async () => {
     jest.spyOn(getCookies(), 'get').mockImplementation(() => 'en');
 
-    const setCookiesSpy = jest.spyOn(getCookies(), 'set');
-    render(<LanguageSelector />);
+    const { container } = render(<LanguageSelector />);
+    expect(container).toMatchSnapshot('before-same-language-selection');
 
     const langDropdown = screen.getByRole('button', { id: 'lang-selector-dropdown' });
     fireEvent.click(langDropdown);
@@ -105,27 +99,37 @@ describe('LanguageSelector', () => {
       fireEvent.click(englishOption);
     });
 
-    expect(setCookiesSpy).not.toHaveBeenCalled();
-    expect(patchPreferences).not.toHaveBeenCalled();
-    expect(postSetLang).not.toHaveBeenCalled();
-    expect(mockReload).not.toHaveBeenCalled();
+    expect(container).toMatchSnapshot('after-same-language-selection');
+    expect(changeUserSessionLanguage).not.toHaveBeenCalled();
   });
 
-  it('should display the language icon and modify the label according to the screen size', () => {
+  it('should display full language name on large screens', () => {
     jest.spyOn(getCookies(), 'get').mockImplementation(() => 'en');
 
     global.innerWidth = 1200;
-    const { rerender } = render(<LanguageSelector />);
+    render(<LanguageSelector />);
+
     const button = screen.getByRole('button', { id: 'lang-selector-dropdown' });
-    expect(button.textContent).toContain('English');
+    expect(button).toMatchSnapshot('large-screen-button');
+  });
+
+  it('should display language code on medium screens', () => {
+    jest.spyOn(getCookies(), 'get').mockImplementation(() => 'en');
 
     global.innerWidth = 700;
-    rerender(<LanguageSelector />);
-    expect(button.textContent).toContain('EN');
+    render(<LanguageSelector />);
+
+    const button = screen.getByRole('button', { id: 'lang-selector-dropdown' });
+    expect(button).toMatchSnapshot('medium-screen-button');
+  });
+
+  it('should display only icon on small screens', () => {
+    jest.spyOn(getCookies(), 'get').mockImplementation(() => 'en');
 
     global.innerWidth = 500;
-    rerender(<LanguageSelector />);
-    expect(button.textContent).not.toContain('EN');
-    expect(button.textContent).not.toContain('English');
+    render(<LanguageSelector />);
+
+    const button = screen.getByRole('button', { id: 'lang-selector-dropdown' });
+    expect(button).toMatchSnapshot('small-screen-button');
   });
 });
