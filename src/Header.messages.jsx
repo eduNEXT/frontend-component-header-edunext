@@ -111,6 +111,11 @@ const messages = defineMessages({
     defaultMessage: 'App',
     description: 'The aria label for the app Nav',
   },
+  'header.links.aboutUs': {
+    id: 'header.links.aboutUs',
+    defaultMessage: 'About of EDU',
+    description: 'Link to go to the about page',
+  },
 });
 
 export default messages;
