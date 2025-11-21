@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","names":["LanguageSelector"],"sources":["../../src/language-selector/index.js"],"sourcesContent":["import LanguageSelector from './LanguageSelector';\n\nexport default LanguageSelector;\n"],"mappings":"AAAA,OAAOA,gBAAgB,MAAM,oBAAoB;AAEjD,eAAeA,gBAAgB","ignoreList":[]}
