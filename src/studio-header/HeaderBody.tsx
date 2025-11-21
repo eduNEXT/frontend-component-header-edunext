@@ -13,7 +13,7 @@ import {
   Row,
 } from '@openedx/paragon';
 import { Close, MenuIcon, Search } from '@openedx/paragon/icons';
-import LanguageSelector from 'language-selector';
+import LanguageSelector from '../language-selector';
 import CourseLockUp from './CourseLockUp';
 import UserMenu from './UserMenu';
 import BrandNav from './BrandNav';
