@@ -35,7 +35,7 @@
   "devDependencies": {
     "@edx/brand": "npm:@openedx/brand-openedx@^1.2.2",
     "@edx/browserslist-config": "^1.1.1",
-    "@edx/frontend-platform": "github:edunext/frontend-platform#ase/lang-selector",
+    "@edx/frontend-platform": "^8.3.1",
     "@edx/reactifex": "^2.1.1",
     "@openedx/frontend-build": "^14.3.2",
     "@openedx/paragon": "^23.0.0",
@@ -60,7 +60,7 @@
     "@fortawesome/free-regular-svg-icons": "6.6.0",
     "@fortawesome/free-solid-svg-icons": "6.6.0",
     "@fortawesome/react-fontawesome": "^0.2.0",
-    "@openedx/frontend-plugin-framework": "github:edunext/frontend-plugin-framework#ase/lang-selector",
+    "@openedx/frontend-plugin-framework": "^1.7.0",
     "axios-mock-adapter": "1.22.0",
     "babel-polyfill": "6.26.0",
     "classnames": "^2.5.1",
@@ -69,7 +69,7 @@
     "react-transition-group": "4.4.5"
   },
   "peerDependencies": {
-    "@edx/frontend-platform": "8.3.11-alpha.1 || ^7.0.0 || ^8.0.0",
+    "@edx/frontend-platform": "^7.0.0 || ^8.0.0",
     "@openedx/paragon": ">= 22.0.0 < 24.0.0",
     "prop-types": "^15.5.10",
     "react": "^16.9.0 || ^17.0.0 || ^18.0.0",
