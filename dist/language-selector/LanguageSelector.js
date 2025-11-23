@@ -7,6 +7,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { changeUserSessionLanguage, getSupportedLocaleList, getPrimaryLanguageSubtag, injectIntl } from '@edx/frontend-platform/i18n';
+import { getConfig } from '@edx/frontend-platform'; // Agregar este import
 import { getLocale } from '@edx/frontend-platform/i18n/lib';
 import { Dropdown } from '@openedx/paragon';
 import { Language } from '@openedx/paragon/icons';
@@ -45,7 +46,13 @@ var getDisplayName = function getDisplayName(locale) {
  */
 var LanguageSelector = function LanguageSelector(_ref) {
   var className = _ref.className;
-  var languageOptions = getSupportedLocaleList();
+  var allLanguages = getSupportedLocaleList();
+  var configuredLanguages = getConfig().SITE_SUPPORTED_LANGUAGES;
+
+  // Filter languages based on SITE_SUPPORTED_LANGUAGES config
+  var languageOptions = Array.isArray(configuredLanguages) && configuredLanguages.length > 0 ? allLanguages.filter(function (locale) {
+    return configuredLanguages.includes(locale);
+  }) : allLanguages;
   var _useState = useState(getLocale()),
     _useState2 = _slicedToArray(_useState, 2),
     currentLocale = _useState2[0],
