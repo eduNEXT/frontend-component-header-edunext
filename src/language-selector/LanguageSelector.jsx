@@ -60,7 +60,7 @@ const LanguageSelector = ({ className }) => {
    */
   const handleSelect = (selectedLocale) => {
     if (currentLocale !== selectedLocale) {
-      changeUserSessionLanguage(selectedLocale);
+      changeUserSessionLanguage(selectedLocale, true);
       setCurrentLocale(selectedLocale);
     }
   };

@@ -66,7 +66,7 @@ var LanguageSelector = function LanguageSelector(_ref) {
    */
   var handleSelect = function handleSelect(selectedLocale) {
     if (currentLocale !== selectedLocale) {
-      changeUserSessionLanguage(selectedLocale);
+      changeUserSessionLanguage(selectedLocale, true);
       setCurrentLocale(selectedLocale);
     }
   };
