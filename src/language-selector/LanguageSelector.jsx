@@ -7,6 +7,7 @@ import {
   getPrimaryLanguageSubtag,
   injectIntl,
 } from '@edx/frontend-platform/i18n';
+import { getConfig } from '@edx/frontend-platform'; // Agregar este import
 import { getLocale } from '@edx/frontend-platform/i18n/lib';
 import { Dropdown } from '@openedx/paragon';
 import { Language } from '@openedx/paragon/icons';
@@ -41,7 +42,14 @@ const getDisplayName = (locale) => {
  * @requires config.LANGUAGE_PREFERENCE_COOKIE_NAME - Cookie name for storing language preference
  */
 const LanguageSelector = ({ className }) => {
-  const languageOptions = getSupportedLocaleList();
+  const allLanguages = getSupportedLocaleList();
+  const configuredLanguages = getConfig().SITE_SUPPORTED_LANGUAGES;
+
+  // Filter languages based on SITE_SUPPORTED_LANGUAGES config
+  const languageOptions = Array.isArray(configuredLanguages) && configuredLanguages.length > 0
+    ? allLanguages.filter(locale => configuredLanguages.includes(locale))
+    : allLanguages;
+
   const [currentLocale, setCurrentLocale] = useState(getLocale());
 
   /**
@@ -61,8 +69,7 @@ const LanguageSelector = ({ className }) => {
   const currentlangDisplayName = getDisplayName(currentLocale);
 
   // Don't render the component if there are no language options
-  if (!Array.isArray(languageOptions)
-    || languageOptions.length === 0) {
+  if (!Array.isArray(languageOptions) || languageOptions.length === 0) {
     return null;
   }
 
